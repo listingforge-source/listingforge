@@ -27,6 +27,7 @@ export default function AppPage() {
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState("");
   const [userEmail, setUserEmail] = useState("");
+  const [authChecked, setAuthChecked] = useState(false);
 
   const supabase = createClient();
 
@@ -36,10 +37,11 @@ export default function AppPage() {
         window.location.href = "/auth";
       } else {
         setUserEmail(data.user.email || "");
+        setAuthChecked(true);
       }
     });
   }, []);
-
+  
   const handleLogout = async () => {
     await supabase.auth.signOut();
     window.location.href = "/auth";
@@ -50,7 +52,20 @@ export default function AppPage() {
   ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+  
+  const handleUpgrade = async () => {
+    const res = await fetch("/api/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: userEmail }),
+    });
+    const data = await res.json();
+    if (data.url) {
+      window.location.href = data.url;
+    }
+  };
 
+  
   const handleGenerate = async () => {
     if (!formData.productName.trim()) return;
     setLoading(true);
@@ -85,8 +100,17 @@ export default function AppPage() {
     copyToClipboard(full, "all");
   };
 
+  if (!authChecked) {
+    return (
+      <div className="min-h-screen bg-cream flex items-center justify-center">
+        <div className="w-8 h-8 border-3 border-terracotta border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-cream">
+
       {/* NAV */}
       <nav className="px-6 md:px-12 py-4 flex items-center justify-between border-b border-border bg-white">
         <Link href="/" className="font-display text-xl font-bold tracking-tight">
@@ -94,6 +118,12 @@ export default function AppPage() {
         </Link>
         <div className="flex items-center gap-4">
           <span className="text-xs text-ink-faint font-mono">{userEmail}</span>
+          <button
+            onClick={handleUpgrade}
+            className="px-4 py-2 text-xs font-bold bg-terracotta text-white rounded-full hover:bg-terracotta-deep transition"
+          >
+            Upgrade to Growth
+          </button>
           <button
             onClick={handleLogout}
             className="text-xs font-bold text-ink-muted hover:text-ink transition"

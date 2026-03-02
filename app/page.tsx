@@ -16,7 +16,7 @@ export default function Home() {
             Pricing
           </a>
           <Link
-            href="/app"
+            href="/auth"
             className="px-5 py-2.5 bg-terracotta text-white text-xs font-bold rounded-full hover:bg-terracotta-deep transition hover:-translate-y-0.5 hover:shadow-lg"
           >
             Start Free &rarr;
@@ -47,7 +47,7 @@ export default function Home() {
 
           <div className="flex gap-3 justify-center animate-fade-up [animation-delay:300ms]">
             <Link
-              href="/app"
+              href="/auth"
               className="px-8 py-3.5 bg-terracotta text-white text-sm font-bold rounded-full hover:bg-terracotta-deep transition hover:-translate-y-0.5 hover:shadow-lg"
             >
               Generate Your First Listing
@@ -165,11 +165,17 @@ export default function Home() {
               <li className="text-sm text-ink-muted border-b border-cream-dark pb-2"><span className="text-sage font-bold mr-2">&#10003;</span>Copy to clipboard</li>
             </ul>
             <Link
-              href="/app"
-              className="block text-center px-6 py-3 border border-border rounded-full text-sm font-bold text-ink-soft hover:border-ink-faint hover:text-ink transition"
-            >
-              Start Free
-            </Link>
+            href="/auth?mode=login"
+            className="px-5 py-2.5 border border-border text-ink-soft text-xs font-bold rounded-full hover:border-ink-faint hover:text-ink transition"
+          >
+            Log in
+          </Link>
+          <Link
+            href="/auth?mode=signup"
+            className="px-5 py-2.5 bg-terracotta text-white text-xs font-bold rounded-full hover:bg-terracotta-deep transition hover:-translate-y-0.5 hover:shadow-lg"
+          >
+            Start Free &rarr;
+          </Link>
           </div>
 
           {/* Pro */}
@@ -190,7 +196,7 @@ export default function Home() {
               <li className="text-sm text-ink-muted border-b border-cream-dark pb-2"><span className="text-sage font-bold mr-2">&#10003;</span>Priority speed</li>
             </ul>
             <Link
-              href="/app"
+              href="/auth"
               className="block text-center px-6 py-3 bg-terracotta text-white rounded-full text-sm font-bold hover:bg-terracotta-deep transition hover:-translate-y-0.5 hover:shadow-lg"
             >
               Start 7-Day Trial

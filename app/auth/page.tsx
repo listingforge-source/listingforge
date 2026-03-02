@@ -18,6 +18,17 @@ export default function AuthPage() {
     setLoading(true);
     setMessage("");
 
+    if (!isLogin) {
+      const hasUppercase = /[A-Z]/.test(password);
+      const hasNumber = /[0-9]/.test(password);
+      const hasSymbol = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+      if (!hasUppercase || !hasNumber || !hasSymbol) {
+        setMessage("Password must include an uppercase letter, a number, and a symbol.");
+        setLoading(false);
+        return;
+      }
+    }
+
     if (isLogin) {
       const { error } = await supabase.auth.signInWithPassword({
         email,
@@ -36,7 +47,7 @@ export default function AuthPage() {
       if (error) {
         setMessage(error.message);
       } else {
-        setMessage("Check your email to confirm your account!");
+        window.location.href = "/auth/confirm?email=" + encodeURIComponent(email);
       }
     }
     setLoading(false);
