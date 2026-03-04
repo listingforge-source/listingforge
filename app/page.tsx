@@ -187,7 +187,8 @@ export default function Home() {
             <div className="font-display text-4xl font-bold text-terracotta">
               $29<span className="font-body text-sm font-normal text-ink-faint">/mo</span>
             </div>
-            <p className="text-sm text-ink-muted mb-5">For active sellers</p>
+            <p className="text-sm text-ink-muted mb-1">For active sellers</p>
+            <p className="text-xs text-sage font-bold mb-5">or $18.85/mo billed yearly (save 35%)</p>
             <ul className="space-y-2 mb-7">
               <li className="text-sm text-ink-muted border-b border-cream-dark pb-2"><span className="text-sage font-bold mr-2">&#10003;</span>Unlimited listings</li>
               <li className="text-sm text-ink-muted border-b border-cream-dark pb-2"><span className="text-sage font-bold mr-2">&#10003;</span>Bulk generation (CSV upload)</li>

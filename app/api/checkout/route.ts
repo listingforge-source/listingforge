@@ -5,7 +5,11 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function POST(req: NextRequest) {
   try {
-    const { email } = await req.json();
+    const { email, interval } = await req.json();
+
+    const priceId = interval === "yearly"
+      ? process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_YEARLY!
+      : process.env.NEXT_PUBLIC_STRIPE_PRICE_ID!;
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
@@ -13,7 +17,7 @@ export async function POST(req: NextRequest) {
       customer_email: email,
       line_items: [
         {
-          price: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID!,
+          price: priceId,
           quantity: 1,
         },
       ],
