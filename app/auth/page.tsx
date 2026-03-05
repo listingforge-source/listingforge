@@ -62,6 +62,12 @@ export default function AuthPage() {
 
         <div className="bg-white border border-border rounded-2xl p-8">
           <h1 className="font-display text-xl font-bold mb-1">
+            {!isLogin && (
+              <div className="bg-terracotta/5 border border-terracotta/15 rounded-xl p-4 mb-6 text-center">
+                <p className="text-sm font-bold text-terracotta mb-1">3-day free trial included</p>
+                <p className="text-[11px] text-ink-muted">All Growth features unlocked instantly. No credit card needed.</p>
+              </div>
+            )}
             {isLogin ? "Welcome back" : "Create your account"}
           </h1>
           <p className="text-sm text-ink-muted mb-6">

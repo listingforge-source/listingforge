@@ -25,11 +25,12 @@ export async function POST(req: NextRequest) {
 
     const { data: sub } = await supabase
       .from("subscriptions")
-      .select("status")
+      .select("status, trial_ends_at")
       .eq("user_id", user.id)
       .single();
 
-    const isPaid = sub?.status === "active";
+    const isTrialActive = sub?.status === "trial" && sub?.trial_ends_at && new Date(sub.trial_ends_at) > new Date();
+    const isPaid = sub?.status === "active" || isTrialActive;
 
     if (!isPaid) {
       const startOfMonth = new Date();

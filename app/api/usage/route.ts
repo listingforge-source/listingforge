@@ -28,15 +28,72 @@ export async function GET(req: NextRequest) {
       .eq("user_id", user.id)
       .gte("created_at", startOfMonth.toISOString());
 
+    // Check for existing subscription
     const { data: sub } = await supabase
       .from("subscriptions")
-      .select("status")
+      .select("status, trial_ends_at")
       .eq("user_id", user.id)
       .single();
 
+    let plan = "free";
+    let trialEndsAt = null;
+    let trialDaysLeft = 0;
+
+    if (!sub) {
+      const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+
+      // Check if this IP already used a trial
+      const { count: ipTrialCount } = await supabase
+        .from("subscriptions")
+        .select("*", { count: "exact", head: true })
+        .eq("ip_address", ip);
+
+      if ((ipTrialCount || 0) >= 2) {
+        // IP has too many trial accounts — give free plan instead
+        await supabase.from("subscriptions").insert({
+          user_id: user.id,
+          status: "free",
+          ip_address: ip,
+          updated_at: new Date().toISOString(),
+        });
+        plan = "free";
+      } else {
+        // Grant trial
+        const trialEnd = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
+        await supabase.from("subscriptions").insert({
+          user_id: user.id,
+          status: "trial",
+          trial_ends_at: trialEnd.toISOString(),
+          ip_address: ip,
+          updated_at: new Date().toISOString(),
+        });
+        plan = "trial";
+        trialEndsAt = trialEnd.toISOString();
+        trialDaysLeft = 3;
+      }
+    } else if (sub.status === "active") {
+      plan = "growth";
+    } else if (sub.status === "trial" && sub.trial_ends_at) {
+      const trialEnd = new Date(sub.trial_ends_at);
+      if (trialEnd > new Date()) {
+        plan = "trial";
+        trialEndsAt = sub.trial_ends_at;
+        trialDaysLeft = Math.ceil((trialEnd.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+      } else {
+        // Trial expired
+        await supabase
+          .from("subscriptions")
+          .update({ status: "free", updated_at: new Date().toISOString() })
+          .eq("user_id", user.id);
+        plan = "free";
+      }
+    }
+
     return NextResponse.json({
       count: count || 0,
-      plan: sub?.status === "active" ? "growth" : "free",
+      plan,
+      trialEndsAt,
+      trialDaysLeft,
     });
   } catch (error) {
     console.error("Usage error:", error);

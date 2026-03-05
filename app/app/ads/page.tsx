@@ -16,6 +16,7 @@ export default function AdsPage() {
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [copied, setCopied] = useState("");
+  const [plan, setPlan] = useState("free");
 
   const [formData, setFormData] = useState({
     productName: "",
@@ -40,6 +41,19 @@ export default function AdsPage() {
       }
       setUserEmail(data.user.email || "");
       setAuthChecked(true);
+
+      try {
+        const { data: session } = await supabase.auth.getSession();
+        const res = await fetch("/api/usage", {
+          headers: { Authorization: `Bearer ${session.session?.access_token}` },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setPlan(data.plan || "free");
+        }
+      } catch (err) {
+        console.error(err);
+      }
     };
     checkAuth();
   }, []);
@@ -142,11 +156,17 @@ export default function AdsPage() {
             {/* Platform Tabs */}
             <div className="flex gap-2 mb-6 flex-wrap">
               {AD_PLATFORMS.map((p) => {
-                const isLocked = !["Facebook / Instagram"].includes(p);
+                const isLocked = plan === "free" && !["Facebook / Instagram"].includes(p);
                 return (
                   <button
                     key={p}
-                    onClick={() => setFormData({ ...formData, platform: p })}
+                    onClick={() => {
+                      if (isLocked) {
+                        setShowUpgrade(true);
+                        return;
+                      }
+                      setFormData({ ...formData, platform: p });
+                    }}
                     className={`px-4 py-2 text-xs font-bold rounded-full border transition ${
                       formData.platform === p
                         ? "bg-terracotta text-white border-terracotta"

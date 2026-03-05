@@ -9,6 +9,7 @@ export default function Dashboard() {
   const [authChecked, setAuthChecked] = useState(false);
   const [usageCount, setUsageCount] = useState(0);
   const [plan, setPlan] = useState("free");
+  const [trialDaysLeft, setTrialDaysLeft] = useState(0);
 
  const supabase = createClient();
 
@@ -34,6 +35,7 @@ export default function Dashboard() {
           const data = await res.json();
           setUsageCount(data.count || 0);
           setPlan(data.plan || "free");
+          setTrialDaysLeft(data.trialDaysLeft || 0);
         }
       } catch (err) {
         console.error(err);
@@ -112,29 +114,52 @@ export default function Dashboard() {
           </div>
 
           {/* Plan Card */}
-          <div className="bg-white border border-border rounded-2xl p-6">
+          <div className={`bg-white border rounded-2xl p-6 ${plan === "trial" ? "border-terracotta shadow-[0_0_30px_rgba(196,98,45,0.1)]" : "border-border"}`}>
             <div className="text-[10px] font-bold uppercase tracking-widest text-ink-faint mb-3">Current Plan</div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="font-display text-3xl font-bold capitalize">{plan === "free" ? "Starter" : "Growth"}</span>
-              {plan === "free" && (
-                <span className="px-2 py-0.5 bg-cream-dark text-ink-faint text-[9px] font-bold uppercase tracking-wider rounded-full">Free</span>
-              )}
-              {plan !== "free" && (
-                <span className="px-2 py-0.5 bg-sage/15 text-sage text-[9px] font-bold uppercase tracking-wider rounded-full">Active</span>
-              )}
-            </div>
-            {plan === "free" ? (
-              <button
-                onClick={handleUpgrade}
-                className="mt-2 px-4 py-2 text-xs font-bold bg-terracotta text-white rounded-full hover:bg-terracotta-deep transition"
-              >
-                Upgrade to Growth — $29/mo
-              </button>
+            {plan === "trial" ? (
+              <>
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="font-display text-3xl font-bold">Growth</span>
+                  <span className="px-3 py-1 bg-terracotta text-white text-[9px] font-extrabold uppercase tracking-wider rounded-full animate-pulse">Trial Active</span>
+                </div>
+                <div className="bg-gradient-to-r from-terracotta/5 to-sage/5 rounded-xl p-4 mb-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-bold text-ink-soft">Time remaining</span>
+                    <span className="text-sm font-display font-bold text-terracotta">{trialDaysLeft} day{trialDaysLeft !== 1 ? "s" : ""}</span>
+                  </div>
+                  <div className="h-2 bg-white rounded-full overflow-hidden">
+                    <div className="h-full bg-terracotta rounded-full transition-all" style={{ width: `${(trialDaysLeft / 3) * 100}%` }} />
+                  </div>
+                  <p className="text-[10px] text-ink-faint mt-2">All Growth features are unlocked during your trial</p>
+                </div>
+                <button
+                  onClick={handleUpgrade}
+                  className="w-full py-2.5 text-xs font-bold bg-terracotta text-white rounded-full hover:bg-terracotta-deep transition hover:-translate-y-0.5 hover:shadow-lg"
+                >
+                  Upgrade Now — $29/mo
+                </button>
+              </>
+            ) : plan === "free" ? (
+              <>
+                <span className="font-display text-3xl font-bold">Starter</span>
+                <span className="ml-2 px-2 py-0.5 bg-cream-dark text-ink-faint text-[9px] font-bold uppercase tracking-wider rounded-full">Free</span>
+                <button
+                  onClick={handleUpgrade}
+                  className="mt-4 w-full py-2.5 text-xs font-bold bg-terracotta text-white rounded-full hover:bg-terracotta-deep transition"
+                >
+                  Upgrade to Growth — $29/mo
+                </button>
+              </>
             ) : (
-              <p className="text-xs text-ink-faint">$29/mo &middot; Unlimited listings</p>
+              <>
+                <div className="flex items-center gap-2">
+                  <span className="font-display text-3xl font-bold">Growth</span>
+                  <span className="px-2 py-0.5 bg-sage/15 text-sage text-[9px] font-bold uppercase tracking-wider rounded-full">Active</span>
+                </div>
+                <p className="text-xs text-ink-faint mt-2">$29/mo &middot; Unlimited everything</p>
+              </>
             )}
           </div>
-
           {/* Platforms Card */}
           <div className="bg-white border border-border rounded-2xl p-6">
             <div className="text-[10px] font-bold uppercase tracking-widest text-ink-faint mb-3">Supported Platforms</div>

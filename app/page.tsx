@@ -1,6 +1,28 @@
+"use client";
+
+import { useEffect } from "react";
 import Link from "next/link";
 
 export default function Home() {
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    document.querySelectorAll(".reveal, .reveal-left, .reveal-right, .reveal-scale").forEach((el) => {
+      observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <>
       {/* NAV */}
@@ -27,7 +49,7 @@ export default function Home() {
         <div className="relative z-10">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-terracotta/10 border border-terracotta/15 rounded-full text-[11px] font-bold text-terracotta uppercase tracking-widest mb-7 animate-fade-up">
             <span className="w-1.5 h-1.5 bg-terracotta rounded-full animate-pulse" />
-            Powered by Google Trends &amp; AI
+            3-day free trial &mdash; All features unlocked
           </div>
 
           <h1 className="font-display text-5xl md:text-7xl font-bold tracking-tight leading-[1.08] max-w-4xl mb-5 animate-fade-up [animation-delay:100ms]">
@@ -41,7 +63,7 @@ export default function Home() {
 
           <div className="flex gap-3 justify-center flex-wrap animate-fade-up [animation-delay:300ms]">
             <Link href="/auth?mode=signup" className="px-8 py-3.5 bg-terracotta text-white text-sm font-bold rounded-full hover:bg-terracotta-deep transition hover:-translate-y-0.5 hover:shadow-lg">
-              Start Free — No Credit Card
+              Start 3-Day Free Trial
             </Link>
             <a href="#features" className="px-8 py-3.5 border border-border text-ink-soft text-sm font-medium rounded-full hover:border-ink-faint hover:text-ink transition">
               See all features
@@ -71,15 +93,15 @@ export default function Home() {
 
       {/* FEATURES */}
       <section id="features" className="max-w-6xl mx-auto px-6 md:px-12 py-24">
-        <div className="text-center mb-16">
+        <div className="text-center mb-20 reveal">
           <div className="text-[11px] uppercase tracking-[3px] text-terracotta font-extrabold mb-3">Everything you need</div>
           <h2 className="font-display text-3xl md:text-4xl font-bold tracking-tight mb-4">Five powerful tools. One subscription.</h2>
           <p className="text-sm text-ink-muted max-w-lg mx-auto">Stop juggling ChatGPT, Jungle Scout, and ad tools. ListingForge combines everything an e-commerce seller needs into one platform.</p>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-8">
           {/* Feature 1 — Listing Generator */}
-          <div className="grid md:grid-cols-2 gap-6 items-center bg-white border border-border rounded-2xl p-8 hover:shadow-lg transition">
+          <div className="grid md:grid-cols-2 gap-6 items-center bg-white border border-border rounded-2xl p-8 hover:shadow-lg transition reveal">
             <div>
               <div className="w-12 h-12 rounded-xl bg-terracotta/8 flex items-center justify-center text-2xl mb-4">✍️</div>
               <h3 className="font-display text-xl font-bold mb-2">AI Listing Generator</h3>
@@ -105,15 +127,14 @@ export default function Home() {
           </div>
 
           {/* Feature 2 — SEO Analyzer */}
-          <div className="grid md:grid-cols-2 gap-6 items-center bg-white border border-border rounded-2xl p-8 hover:shadow-lg transition">
+          <div className="grid md:grid-cols-2 gap-6 items-center bg-white border border-border rounded-2xl p-8 hover:shadow-lg transition reveal">
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-12 h-12 rounded-xl bg-sage/8 flex items-center justify-center text-2xl">🔍</div>
-                <span className="px-2.5 py-0.5 bg-sage/15 text-sage text-[9px] font-extrabold uppercase tracking-wider rounded-full">Free</span>
+                <span className="px-2.5 py-0.5 bg-sage/15 text-sage text-[9px] font-extrabold uppercase tracking-wider rounded-full">10 Free / Month</span>
               </div>
               <h3 className="font-display text-xl font-bold mb-2">SEO Analyzer</h3>
               <p className="text-sm text-ink-muted leading-relaxed mb-4">Paste any product listing — yours or a competitor&apos;s — and get an instant SEO score with platform-specific recommendations. Works with listings from any source, not just ListingForge.</p>
-              <p className="text-xs text-sage font-bold">Unlimited and free for all users.</p>
             </div>
             <div className="bg-cream rounded-xl p-6 border border-border">
               <div className="text-[9px] font-bold uppercase tracking-wider text-ink-faint mb-3">Score breakdown</div>
@@ -130,7 +151,7 @@ export default function Home() {
           </div>
 
           {/* Feature 3 — Product Research */}
-          <div className="grid md:grid-cols-2 gap-6 items-center bg-white border border-border rounded-2xl p-8 hover:shadow-lg transition">
+          <div className="grid md:grid-cols-2 gap-6 items-center bg-white border border-border rounded-2xl p-8 hover:shadow-lg transition reveal">
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-12 h-12 rounded-xl bg-blue-500/8 flex items-center justify-center text-2xl">🔬</div>
@@ -155,7 +176,7 @@ export default function Home() {
           </div>
 
           {/* Feature 4 — Ad Generator */}
-          <div className="grid md:grid-cols-2 gap-6 items-center bg-white border border-border rounded-2xl p-8 hover:shadow-lg transition">
+          <div className="grid md:grid-cols-2 gap-6 items-center bg-white border border-border rounded-2xl p-8 hover:shadow-lg transition reveal">
             <div>
               <div className="w-12 h-12 rounded-xl bg-orange-500/8 flex items-center justify-center text-2xl mb-4">📣</div>
               <h3 className="font-display text-xl font-bold mb-2">Ad Copy Generator</h3>
@@ -182,7 +203,7 @@ export default function Home() {
           </div>
 
           {/* Feature 5 — Platform Intelligence */}
-          <div className="bg-white border border-border rounded-2xl p-8 hover:shadow-lg transition text-center">
+          <div className="bg-white border border-border rounded-2xl p-8 hover:shadow-lg transition text-center reveal">
             <div className="w-12 h-12 rounded-xl bg-purple-500/8 flex items-center justify-center text-2xl mb-4 mx-auto">📐</div>
             <h3 className="font-display text-xl font-bold mb-2">Platform Intelligence Built In</h3>
             <p className="text-sm text-ink-muted leading-relaxed max-w-lg mx-auto mb-6">Every tool in ListingForge understands the specific rules of each marketplace. Amazon&apos;s 200-character title limits, Etsy&apos;s long-tail keyword strategy, Shopify&apos;s SEO requirements — it&apos;s all handled automatically.</p>
@@ -218,25 +239,25 @@ export default function Home() {
           <div className="text-[11px] uppercase tracking-[3px] text-terracotta font-extrabold mb-3">How it works</div>
           <h2 className="font-display text-3xl md:text-4xl font-bold tracking-tight mb-14">The complete seller workflow</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="relative p-6 border-2 border-border rounded-2xl bg-white hover:-translate-y-1 hover:shadow-xl hover:border-terracotta/20 transition-all duration-300">
+            <div className="relative p-6 border-2 border-border rounded-2xl bg-white hover:-translate-y-1 hover:shadow-xl hover:border-terracotta/20 transition-all duration-300 reveal" style={{transitionDelay: "0ms"}}>
               <div className="w-8 h-8 rounded-full bg-terracotta text-white text-xs font-bold flex items-center justify-center mb-4">1</div>
               <div className="text-2xl mb-3">🔬</div>
               <h3 className="text-base font-bold mb-2">Research</h3>
               <p className="text-sm text-ink-muted leading-relaxed">Validate your product idea with real Google Trends data and market analysis.</p>
             </div>
-            <div className="relative p-6 border-2 border-border rounded-2xl bg-white hover:-translate-y-1 hover:shadow-xl hover:border-terracotta/20 transition-all duration-300">
+            <div className="relative p-6 border-2 border-border rounded-2xl bg-white hover:-translate-y-1 hover:shadow-xl hover:border-terracotta/20 transition-all duration-300 reveal" style={{transitionDelay: "100ms"}}>
               <div className="w-8 h-8 rounded-full bg-terracotta text-white text-xs font-bold flex items-center justify-center mb-4">2</div>
               <div className="text-2xl mb-3">✍️</div>
               <h3 className="text-base font-bold mb-2">Generate</h3>
               <p className="text-sm text-ink-muted leading-relaxed">Create optimized listings with AI-powered copy tailored to your marketplace.</p>
             </div>
-            <div className="relative p-6 border-2 border-border rounded-2xl bg-white hover:-translate-y-1 hover:shadow-xl hover:border-terracotta/20 transition-all duration-300">
+            <div className="relative p-6 border-2 border-border rounded-2xl bg-white hover:-translate-y-1 hover:shadow-xl hover:border-terracotta/20 transition-all duration-300 reveal" style={{transitionDelay: "200ms"}}>
               <div className="w-8 h-8 rounded-full bg-terracotta text-white text-xs font-bold flex items-center justify-center mb-4">3</div>
               <div className="text-2xl mb-3">🔍</div>
               <h3 className="text-base font-bold mb-2">Optimize</h3>
               <p className="text-sm text-ink-muted leading-relaxed">Score and refine your listings with platform-specific SEO analysis.</p>
             </div>
-            <div className="relative p-6 border-2 border-border rounded-2xl bg-white hover:-translate-y-1 hover:shadow-xl hover:border-terracotta/20 transition-all duration-300">
+            <div className="relative p-6 border-2 border-border rounded-2xl bg-white hover:-translate-y-1 hover:shadow-xl hover:border-terracotta/20 transition-all duration-300 reveal" style={{transitionDelay: "300ms"}}>
               <div className="w-8 h-8 rounded-full bg-terracotta text-white text-xs font-bold flex items-center justify-center mb-4">4</div>
               <div className="text-2xl mb-3">📣</div>
               <h3 className="text-base font-bold mb-2">Promote</h3>
@@ -248,7 +269,7 @@ export default function Home() {
 
       {/* FREE TOOL CTA */}
       <section className="max-w-4xl mx-auto px-10 md:px-12 py-24 text-center">
-        <div className="bg-sage/8 rounded-2xl p-10">
+        <div className="bg-sage/8 rounded-2xl p-10 reveal-scale">
           <div className="text-3xl mb-4">🔍</div>
           <h2 className="font-display text-2xl md:text-3xl font-bold mb-3">Try our SEO Analyzer — completely free</h2>
           <p className="text-sm text-ink-muted max-w-md mx-auto mb-6">Paste any product listing and get an instant SEO score with actionable recommendations. No sign up required to see the value.</p>
@@ -257,6 +278,18 @@ export default function Home() {
           </Link>
         </div>
       </section>
+
+      {/* TRIAL BANNER */}
+      <section className="max-w-4xl mx-auto px-6 md:px-12 -mb-12 relative z-10">
+        <div className="bg-ink rounded-2xl p-10 text-center text-white shadow-xl reveal-scale">
+          <h3 className="font-display text-3xl font-bold mb-3">Try everything free for 3 days</h3>
+          <p className="text-sm text-white/60 mb-6 max-w-md mx-auto leading-relaxed">Sign up and instantly unlock all Growth features — unlimited listings, product research, ad generator, full scoring, and all platforms. No credit card required.</p>
+          <Link href="/auth?mode=signup" className="inline-block px-8 py-3.5 bg-terracotta text-white text-sm font-bold rounded-full hover:-translate-y-0.5 hover:shadow-lg transition">
+            Start Your Free Trial &rarr;
+          </Link>
+        </div>
+      </section>
+      
 
       {/* PRICING */}
       <section id="pricing" className="bg-white border-y border-border">
@@ -267,13 +300,13 @@ export default function Home() {
 
           <div className="grid md:grid-cols-2 gap-6 text-left max-w-3xl mx-auto">
             {/* Free */}
-            <div className="p-8 bg-cream border border-border rounded-2xl">
+            <div className="p-8 bg-cream border border-border rounded-2xl reveal" style={{transitionDelay: "0ms"}}>
               <h3 className="text-lg font-bold mb-1">Starter</h3>
               <div className="font-display text-4xl font-bold text-ink mb-1">$0<span className="font-body text-sm font-normal text-ink-faint">/mo</span></div>
               <p className="text-sm text-ink-muted mb-5">Get started for free</p>
               <ul className="space-y-2.5 mb-7">
                 <li className="text-sm text-ink-muted"><span className="text-sage font-bold mr-2">&#10003;</span>5 listings per month</li>
-                <li className="text-sm text-ink-muted"><span className="text-sage font-bold mr-2">&#10003;</span>SEO Analyzer (unlimited)</li>
+                <li className="text-sm text-ink-muted"><span className="text-sage font-bold mr-2">&#10003;</span>SEO Analyzer (10/month)</li>
                 <li className="text-sm text-ink-muted"><span className="text-sage font-bold mr-2">&#10003;</span>1 product research per month</li>
                 <li className="text-sm text-ink-muted"><span className="text-sage font-bold mr-2">&#10003;</span>2 ad generations per month</li>
                 <li className="text-sm text-ink-muted"><span className="text-sage font-bold mr-2">&#10003;</span>Facebook/Instagram ads only</li>
@@ -285,7 +318,7 @@ export default function Home() {
             </div>
 
             {/* Growth */}
-            <div className="p-8 bg-white border-2 border-terracotta rounded-2xl relative shadow-[0_0_40px_rgba(196,98,45,0.08)]">
+            <div className="p-8 bg-white border-2 border-terracotta rounded-2xl relative shadow-[0_0_40px_rgba(196,98,45,0.08)] reveal" style={{transitionDelay: "150ms"}}>
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-terracotta text-white text-[10px] font-extrabold uppercase tracking-widest rounded-full">Most Popular</div>
               <h3 className="text-lg font-bold mb-1">Growth</h3>
               <div className="font-display text-4xl font-bold text-terracotta mb-1">$29<span className="font-body text-sm font-normal text-ink-faint">/mo</span></div>
@@ -314,13 +347,12 @@ export default function Home() {
         <div className="text-center mb-12">
           <h2 className="font-display text-3xl font-bold tracking-tight">Frequently asked questions</h2>
         </div>
-        <div className="space-y-4">
+        <div className="space-y-4 reveal">
           {[
             {q: "How is this better than just using ChatGPT?", a: "ChatGPT doesn't know Amazon's 200-character title limit, Etsy's long-tail keyword strategy, or Shopify's SEO rules. ListingForge enforces platform-specific constraints, scores your listings, and provides real Google Trends data for product research — things a general AI chat simply can't do."},
             {q: "What platforms do you support?", a: "For listings: Shopify, Amazon, Etsy, eBay, and WooCommerce. For ads: Facebook/Instagram, Google Ads, TikTok Ads, Pinterest Ads, and Amazon PPC. Each platform gets optimized copy following its specific rules."},
             {q: "Is the product research data real?", a: "Yes. Our product research tool pulls real Google Trends data to show actual search interest, seasonal patterns, and trend direction. This is combined with AI analysis for profitability estimates and competition assessment."},
-            {q: "Can I use it for free?", a: "Absolutely. The Starter plan gives you 5 listings per month, unlimited SEO analysis, 1 product research, and 2 ad generations — all free, no credit card required. The SEO Analyzer alone is worth signing up for."},
-            {q: "What if I already have listings written?", a: "Perfect — use our SEO Analyzer. Paste any existing listing and get an instant score with specific recommendations for improvement. It works with listings from any source."},
+            {q: "Can I use it for free?", a: "Absolutely. The Starter plan gives you 5 listings per month, 10 SEO analyses, 1 product research, and 2 ad generations — all free, no credit card required. Plus a 3-day trial of all Growth features when you sign up."},            {q: "What if I already have listings written?", a: "Perfect — use our SEO Analyzer. Paste any existing listing and get an instant score with specific recommendations for improvement. It works with listings from any source."},
             {q: "Can I cancel anytime?", a: "Yes. Cancel your Growth subscription anytime from the billing page. You'll keep access until the end of your billing period, then revert to the free Starter plan."},
           ].map((item, i) => (
             <div key={i} className="border border-border rounded-xl p-5 bg-white">
@@ -332,12 +364,12 @@ export default function Home() {
       </section>
 
       {/* FINAL CTA */}
-      <section className="bg-ink text-white py-20">
+      <section className="bg-ink text-white py-20 reveal">
         <div className="max-w-3xl mx-auto px-6 text-center">
           <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">Ready to sell smarter?</h2>
           <p className="text-sm text-white/60 mb-8 max-w-md mx-auto">Join thousands of sellers using ListingForge to research products, write better listings, and create ads that convert.</p>
-          <Link href="/auth?mode=signup" className="inline-block px-10 py-4 bg-terracotta text-white text-sm font-bold rounded-full hover:bg-terracotta-deep transition hover:-translate-y- hover:shadow-lg">
-            Start Free — No Credit Card &rarr;
+          <Link href="/auth?mode=signup" className="inline-block px-10 py-4 bg-terracotta text-white text-sm font-bold rounded-full hover:bg-terracotta-deep transition hover:-translate-y-0.5 hover:shadow-lg">
+            Start 3-Day Free Trial &rarr;
           </Link>
         </div>
       </section>
@@ -349,7 +381,7 @@ export default function Home() {
           <h2 className="font-display text-3xl font-bold tracking-tight mb-3">Have a question?</h2>
           <p className="text-sm text-ink-muted">We&apos;d love to hear from you. Send us a message and we&apos;ll get back within 24 hours.</p>
         </div>
-        <form action="https://formspree.io/f/mgonwdpe" method="POST" className="bg-white border border-border rounded-2xl p-8 space-y-4">
+        <form action="https://formspree.io/f/mgonwdpe" method="POST" className="bg-white border border-border rounded-2xl p-8 space-y-4 reveal">
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-bold text-ink-soft mb-1.5">Name</label>

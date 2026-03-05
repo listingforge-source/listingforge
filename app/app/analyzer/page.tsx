@@ -17,18 +17,36 @@ export default function AnalyzerPage() {
   const [seoScore, setSeoScore] = useState<SeoScore | null>(null);
   const [userEmail, setUserEmail] = useState("");
   const [authChecked, setAuthChecked] = useState(false);
+  const [plan, setPlan] = useState("free");
+  const [analyzerCount, setAnalyzerCount] = useState(0);
+  const [showUpgrade, setShowUpgrade] = useState(false);
 
   const supabase = createClient();
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
+    const checkAuth = async () => {
+      const { data } = await supabase.auth.getUser();
       if (!data.user) {
         window.location.href = "/auth";
-      } else {
-        setUserEmail(data.user.email || "");
-        setAuthChecked(true);
+        return;
       }
-    });
+      setUserEmail(data.user.email || "");
+      setAuthChecked(true);
+
+      try {
+        const { data: session } = await supabase.auth.getSession();
+        const res = await fetch("/api/usage", {
+          headers: { Authorization: `Bearer ${session.session?.access_token}` },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setPlan(data.plan || "free");
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    checkAuth();
   }, []);
 
   const handleLogout = async () => {
@@ -36,7 +54,7 @@ export default function AnalyzerPage() {
     window.location.href = "/auth";
   };
 
-  const handleAnalyze = () => {
+  const handleAnalyze = async () => {
     const bulletList = bullets
       .split("\n")
       .map((b) => b.replace(/^[•\-\*]\s*/, "").trim())
@@ -45,6 +63,28 @@ export default function AnalyzerPage() {
       .split(",")
       .map((t) => t.trim())
       .filter(Boolean);
+
+    // Check usage for free users
+    if (plan === "free") {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const res = await fetch("/api/analyzer-usage", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.access_token}`,
+          },
+        });
+        const data = await res.json();
+        if (data.limitReached) {
+          setShowUpgrade(true);
+          return;
+        }
+        setAnalyzerCount(data.count || 0);
+      } catch (err) {
+        console.error(err);
+      }
+    }
 
     const score = calculateSeoScore(
       platform,
@@ -55,6 +95,16 @@ export default function AnalyzerPage() {
       keywords
     );
     setSeoScore(score);
+  };
+
+  const handleUpgrade = async () => {
+    const res = await fetch("/api/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: userEmail, interval: "monthly" }),
+    });
+    const data = await res.json();
+    if (data.url) window.location.href = data.url;
   };
 
   const rules = PLATFORM_RULES[platform];
@@ -75,7 +125,14 @@ export default function AnalyzerPage() {
           <div>
             <div className="flex items-center gap-3 mb-1">
               <h1 className="font-display text-2xl font-bold">SEO Analyzer</h1>
-              <span className="px-2.5 py-0.5 bg-sage/15 text-sage text-[10px] font-bold uppercase tracking-wider rounded-full">Free</span>
+              {plan === "free" && (
+                <span className="px-2.5 py-0.5 bg-sage/15 text-sage text-[10px] font-bold uppercase tracking-wider rounded-full">
+                  {10 - analyzerCount} left this month
+                </span>
+              )}
+              {(plan === "trial" || plan === "growth") && (
+                <span className="px-2.5 py-0.5 bg-sage/15 text-sage text-[10px] font-bold uppercase tracking-wider rounded-full">Unlimited</span>
+              )}
             </div>
             <p className="text-sm text-ink-muted mb-6">
               Paste any product listing and get an instant SEO score with platform-specific recommendations.
@@ -286,6 +343,21 @@ export default function AnalyzerPage() {
                     Generate Optimized Listing
                   </Link>
                 </div>
+                {showUpgrade && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl p-8 max-w-md mx-6 border border-border shadow-2xl">
+            <div className="text-center">
+              <div className="text-4xl mb-4">🔍</div>
+              <h2 className="font-display text-2xl font-bold mb-2">Analyzer Limit Reached</h2>
+              <p className="text-sm text-ink-muted mb-6">Free plan includes 10 SEO analyses per month. Upgrade to Growth for unlimited analysis.</p>
+              <button onClick={handleUpgrade} className="w-full py-3.5 bg-terracotta text-white text-sm font-bold rounded-full hover:bg-terracotta-deep transition hover:-translate-y-0.5 hover:shadow-lg mb-3">
+                Upgrade to Growth — $29/mo
+              </button>
+              <button onClick={() => setShowUpgrade(false)} className="w-full py-3 text-xs font-bold text-ink-faint hover:text-ink transition">Maybe later</button>
+            </div>
+          </div>
+        </div>
+      )}
               </div>
             )}
           </div>
