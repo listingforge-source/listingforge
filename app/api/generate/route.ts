@@ -7,7 +7,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-const FREE_LIMIT = 99;
+const FREE_LIMIT = 5;
 
 export async function POST(req: NextRequest) {
   try {
