@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { href: "/app/analyzer", label: "SEO Analyzer", icon: "🔍" },
   { href: "/app/research", label: "Product Research", icon: "🔬" },
   { href: "/app/ads", label: "Ad Generator", icon: "📣" },
+  { href: "/app/history", label: "History", icon: "📋" },
 ];
 
 const BOTTOM_ITEMS = [

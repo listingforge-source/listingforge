@@ -30,6 +30,7 @@ export async function POST(req: NextRequest) {
 
     const isTrialActive = sub?.status === "trial" && sub?.trial_ends_at && new Date(sub.trial_ends_at) > new Date();
     const isPaid = sub?.status === "active" || isTrialActive;
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
 
     // Check usage this month (free users only)
     if (!isPaid) {
@@ -115,9 +116,22 @@ Respond in this exact JSON format with no other text:
     }
 
     // Log usage
-    await supabase.from("usage").insert({ user_id: user.id });
+    await supabase.from("usage").insert({ user_id: user.id, ip_address: ip, type: "generation" });
 
     const listing = JSON.parse(jsonMatch[0]);
+
+    // Save to listing history
+    await supabase.from("listings").insert({
+      user_id: user.id,
+      platform,
+      product_name: productName,
+      title: listing.title,
+      description: listing.description,
+      bullets: listing.bullets,
+      tags: listing.tags,
+      seo_score: null,
+    });
+
     return NextResponse.json(listing);
   } catch (error) {
     console.error("Generate error:", error);

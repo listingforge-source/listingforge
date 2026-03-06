@@ -32,6 +32,7 @@ export default function AppPage() {
   const [authChecked, setAuthChecked] = useState(false);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [seoScore, setSeoScore] = useState<SeoScore | null>(null);
+  const [scoredPlatform, setScoredPlatform] = useState("");
 
 
   const supabase = createClient();
@@ -102,6 +103,7 @@ export default function AppPage() {
         formData.keywords
       );
       setSeoScore(score);
+      setScoredPlatform(platform);
     } catch (err) {
       console.error(err);
       alert("Generation failed. Please try again.");
@@ -351,7 +353,7 @@ export default function AppPage() {
                   <div className="bg-white border border-border rounded-xl p-5">
                     <div className="flex justify-between items-center mb-4">
                       <span className="text-[10px] font-bold uppercase tracking-widest text-terracotta">
-                        SEO Score — {platform}
+                        SEO Score — {scoredPlatform}
                       </span>
                       <div className={`text-2xl font-display font-bold ${
                         seoScore.overall >= 80 ? "text-sage" : seoScore.overall >= 60 ? "text-terracotta" : "text-red-500"
@@ -399,8 +401,8 @@ export default function AppPage() {
 
                     {/* Platform tips */}
                     <div className="mt-4 pt-3 border-t border-cream-dark">
-                      <div className="text-[9px] font-bold uppercase tracking-wider text-ink-faint mb-2">{platform} Tips</div>
-                      {PLATFORM_RULES[platform]?.tips.map((tip, i) => (
+                      <div className="text-[9px] font-bold uppercase tracking-wider text-ink-faint mb-2">{scoredPlatform} Tips</div>
+                      {PLATFORM_RULES[scoredPlatform]?.tips.map((tip, i) => (
                         <p key={i} className="text-xs text-ink-muted mb-1">→ {tip}</p>
                       ))}
                     </div>

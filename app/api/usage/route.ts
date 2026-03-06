@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
     let trialEndsAt = null;
     let trialDaysLeft = 0;
 
-    if (!sub) {
+    if (!sub || (!sub.trial_ends_at && sub.status !== "active")) {
       const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
 
       // Check if this IP already used a trial
@@ -48,25 +48,29 @@ export async function GET(req: NextRequest) {
         .select("*", { count: "exact", head: true })
         .eq("ip_address", ip);
 
-      if ((ipTrialCount || 0) >= 2) {
+      if ((ipTrialCount || 0) >= 10) {
         // IP has too many trial accounts — give free plan instead
-        await supabase.from("subscriptions").insert({
-          user_id: user.id,
-          status: "free",
-          ip_address: ip,
-          updated_at: new Date().toISOString(),
-        });
+        await supabase
+          .from("subscriptions")
+          .upsert({
+            user_id: user.id,
+            status: "free",
+            ip_address: ip,
+            updated_at: new Date().toISOString(),
+          }, { onConflict: "user_id" });
         plan = "free";
       } else {
         // Grant trial
         const trialEnd = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
-        await supabase.from("subscriptions").insert({
-          user_id: user.id,
-          status: "trial",
-          trial_ends_at: trialEnd.toISOString(),
-          ip_address: ip,
-          updated_at: new Date().toISOString(),
-        });
+        await supabase
+          .from("subscriptions")
+          .upsert({
+            user_id: user.id,
+            status: "trial",
+            trial_ends_at: trialEnd.toISOString(),
+            ip_address: ip,
+            updated_at: new Date().toISOString(),
+          }, { onConflict: "user_id" });
         plan = "trial";
         trialEndsAt = trialEnd.toISOString();
         trialDaysLeft = 3;
