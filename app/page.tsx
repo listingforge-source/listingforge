@@ -16,7 +16,7 @@ export default function Home() {
       { threshold: 0.1 }
     );
 
-    document.querySelectorAll(".reveal, .reveal-left, .reveal-right, .reveal-scale").forEach((el) => {
+    document.querySelectorAll(".reveal, .reveal-left, .reveal-right, .reveal-scale, .stagger-children").forEach((el) => {
       observer.observe(el);
     });
 
@@ -43,8 +43,8 @@ export default function Home() {
 
       {/* HERO */}
       <section className="min-h-screen flex flex-col items-center justify-center text-center px-6 pt-28 pb-20 relative overflow-hidden">
-        <div className="absolute -top-24 -right-48 w-[600px] h-[600px] bg-terracotta/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-36 -left-36 w-[500px] h-[500px] bg-sage/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-24 -right-48 w-[600px] h-[600px] bg-terracotta/5 rounded-full blur-3xl pointer-events-none animate-float" />
+        <div className="absolute -bottom-36 -left-36 w-[500px] h-[500px] bg-sage/5 rounded-full blur-3xl pointer-events-none animate-float" style={{animationDelay: "1.5s"}} />
 
         <div className="relative z-10">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-terracotta/10 border border-terracotta/15 rounded-full text-[11px] font-bold text-terracotta uppercase tracking-widest mb-7 animate-fade-up">
@@ -70,7 +70,7 @@ export default function Home() {
             </a>
           </div>
 
-          <div className="flex gap-8 md:gap-12 justify-center mt-14 animate-fade-up [animation-delay:400ms]">
+          <div className="flex gap-8 md:gap-12 justify-center mt-14 animate-fade-up [animation-delay:400ms] stagger-children visible">
             <div className="text-center">
               <div className="font-display text-2xl font-bold">5 tools</div>
               <div className="text-[10px] uppercase tracking-widest text-ink-faint font-semibold mt-0.5">In one platform</div>
@@ -101,7 +101,7 @@ export default function Home() {
 
         <div className="space-y-8">
           {/* Feature 1 — Listing Generator */}
-          <div className="grid md:grid-cols-2 gap-6 items-center bg-white border border-border rounded-2xl p-8 hover:shadow-lg transition reveal">
+          <div className="grid md:grid-cols-2 gap-6 items-center bg-white border border-border rounded-2xl p-8 hover-lift reveal">
             <div>
               <div className="w-12 h-12 rounded-xl bg-terracotta/8 flex items-center justify-center text-2xl mb-4">✍️</div>
               <h3 className="font-display text-xl font-bold mb-2">AI Listing Generator</h3>
@@ -127,7 +127,7 @@ export default function Home() {
           </div>
 
           {/* Feature 2 — SEO Analyzer */}
-          <div className="grid md:grid-cols-2 gap-6 items-center bg-white border border-border rounded-2xl p-8 hover:shadow-lg transition reveal">
+          <div className="grid md:grid-cols-2 gap-6 items-center bg-white border border-border rounded-2xl p-8 hover-lift reveal">
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-12 h-12 rounded-xl bg-sage/8 flex items-center justify-center text-2xl">🔍</div>
@@ -151,7 +151,7 @@ export default function Home() {
           </div>
 
           {/* Feature 3 — Product Research */}
-          <div className="grid md:grid-cols-2 gap-6 items-center bg-white border border-border rounded-2xl p-8 hover:shadow-lg transition reveal">
+          <div className="grid md:grid-cols-2 gap-6 items-center bg-white border border-border rounded-2xl p-8 hover-lift reveal">
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-12 h-12 rounded-xl bg-blue-500/8 flex items-center justify-center text-2xl">🔬</div>
@@ -176,7 +176,7 @@ export default function Home() {
           </div>
 
           {/* Feature 4 — Ad Generator */}
-          <div className="grid md:grid-cols-2 gap-6 items-center bg-white border border-border rounded-2xl p-8 hover:shadow-lg transition reveal">
+          <div className="grid md:grid-cols-2 gap-6 items-center bg-white border border-border rounded-2xl p-8 hover-lift reveal">
             <div>
               <div className="w-12 h-12 rounded-xl bg-orange-500/8 flex items-center justify-center text-2xl mb-4">📣</div>
               <h3 className="font-display text-xl font-bold mb-2">Ad Copy Generator</h3>
@@ -207,7 +207,7 @@ export default function Home() {
             <div className="w-12 h-12 rounded-xl bg-purple-500/8 flex items-center justify-center text-2xl mb-4 mx-auto">📐</div>
             <h3 className="font-display text-xl font-bold mb-2">Platform Intelligence Built In</h3>
             <p className="text-sm text-ink-muted leading-relaxed max-w-lg mx-auto mb-6">Every tool in ListingForge understands the specific rules of each marketplace. Amazon&apos;s 200-character title limits, Etsy&apos;s long-tail keyword strategy, Shopify&apos;s SEO requirements — it&apos;s all handled automatically.</p>
-            <div className="flex justify-center gap-6 flex-wrap">
+            <div className="flex justify-center gap-6 flex-wrap stagger-children">
               <div className="text-center">
                 <div className="w-14 h-14 rounded-2xl bg-cream border border-border flex items-center justify-center text-xl mx-auto mb-1">🛍️</div>
                 <span className="text-[10px] font-bold text-ink-faint">Shopify</span>
@@ -238,8 +238,8 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-6 md:px-12 py-24">
           <div className="text-[11px] uppercase tracking-[3px] text-terracotta font-extrabold mb-3">How it works</div>
           <h2 className="font-display text-3xl md:text-4xl font-bold tracking-tight mb-14">The complete seller workflow</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="relative p-6 border-2 border-border rounded-2xl bg-white hover:-translate-y-1 hover:shadow-xl hover:border-terracotta/20 transition-all duration-300 reveal" style={{transitionDelay: "0ms"}}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 stagger-children">
+            <div className="relative p-6 border-2 border-border rounded-2xl bg-white hover-lift hover:border-terracotta/20 transition-all duration-300">
               <div className="w-8 h-8 rounded-full bg-terracotta text-white text-xs font-bold flex items-center justify-center mb-4">1</div>
               <div className="text-2xl mb-3">🔬</div>
               <h3 className="text-base font-bold mb-2">Research</h3>
@@ -300,7 +300,7 @@ export default function Home() {
 
           <div className="grid md:grid-cols-2 gap-6 text-left max-w-3xl mx-auto">
             {/* Free */}
-            <div className="p-8 bg-cream border border-border rounded-2xl reveal" style={{transitionDelay: "0ms"}}>
+            <div className="p-8 bg-cream border border-border rounded-2xl reveal hover-lift" style={{transitionDelay: "0ms"}}>
               <h3 className="text-lg font-bold mb-1">Starter</h3>
               <div className="font-display text-4xl font-bold text-ink mb-1">$0<span className="font-body text-sm font-normal text-ink-faint">/mo</span></div>
               <p className="text-sm text-ink-muted mb-5">Get started for free</p>
@@ -318,7 +318,7 @@ export default function Home() {
             </div>
 
             {/* Growth */}
-            <div className="p-8 bg-white border-2 border-terracotta rounded-2xl relative shadow-[0_0_40px_rgba(196,98,45,0.08)] reveal" style={{transitionDelay: "150ms"}}>
+            <div className="p-8 bg-white border-2 border-terracotta rounded-2xl relative shadow-[0_0_40px_rgba(196,98,45,0.08)] reveal hover lift" style={{transitionDelay: "150ms"}}>
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-terracotta text-white text-[10px] font-extrabold uppercase tracking-widest rounded-full">Most Popular</div>
               <h3 className="text-lg font-bold mb-1">Growth</h3>
               <div className="font-display text-4xl font-bold text-terracotta mb-1">$29<span className="font-body text-sm font-normal text-ink-faint">/mo</span></div>
@@ -347,7 +347,7 @@ export default function Home() {
         <div className="text-center mb-12">
           <h2 className="font-display text-3xl font-bold tracking-tight">Frequently asked questions</h2>
         </div>
-        <div className="space-y-4 reveal">
+        <div className="space-y-4 stagger-children">
           {[
             {q: "How is this better than just using ChatGPT?", a: "ChatGPT doesn't know Amazon's 200-character title limit, Etsy's long-tail keyword strategy, or Shopify's SEO rules. ListingForge enforces platform-specific constraints, scores your listings, and provides real Google Trends data for product research — things a general AI chat simply can't do."},
             {q: "What platforms do you support?", a: "For listings: Shopify, Amazon, Etsy, eBay, and WooCommerce. For ads: Facebook/Instagram, Google Ads, TikTok Ads, Pinterest Ads, and Amazon PPC. Each platform gets optimized copy following its specific rules."},
@@ -414,13 +414,20 @@ export default function Home() {
       </section>
 
       {/* FOOTER */}
-      <footer className="py-10 text-center border-t border-border">
-        <div className="font-display text-lg font-bold tracking-tight mb-2">
-          Listing<span className="text-terracotta">Forge</span>
+      <footer className="py-12 border-t border-border">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <div className="font-display text-lg font-bold tracking-tight mb-3">
+            Listing<span className="text-terracotta">Forge</span>
+          </div>
+          <div className="flex justify-center gap-6 mb-4">
+            <Link href="/terms" className="text-xs text-ink-faint hover:text-ink transition">Terms of Service</Link>
+            <Link href="/privacy" className="text-xs text-ink-faint hover:text-ink transition">Privacy Policy</Link>
+            <a href="#contact" className="text-xs text-ink-faint hover:text-ink transition">Contact</a>
+          </div>
+          <p className="text-xs text-ink-faint">
+            &copy; 2026 ListingForge. Built for sellers who&apos;d rather sell than write.
+          </p>
         </div>
-        <p className="text-xs text-ink-faint">
-          &copy; 2026 ListingForge. Built for sellers who&apos;d rather sell than write.
-        </p>
       </footer>
     </>
   );

@@ -471,17 +471,52 @@ export default function AppPage() {
                     <div className="flex items-center gap-2 mb-4">
                       <span className="text-[10px] font-bold uppercase tracking-widest text-terracotta">A/B Title Variations</span>
                       <span className="px-2 py-0.5 bg-terracotta/10 text-terracotta text-[8px] font-extrabold uppercase rounded-full">Growth</span>
+                      <span className="px-2 py-0.5 bg-sage/15 text-sage text-[8px] font-extrabold uppercase rounded-full">Live Data</span>
                     </div>
 
+                    {/* Search Data Insights */}
+                    {abResult.dataInsights && (
+                      <div className="bg-cream rounded-lg p-3 mb-4">
+                        <div className="text-[9px] font-bold uppercase tracking-wider text-ink-faint mb-2">Real Search Data Used</div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <div className="text-[8px] font-bold text-terracotta mb-1">Amazon Searches</div>
+                            <div className="flex flex-wrap gap-1">
+                              {abResult.dataInsights.amazonSuggestions?.slice(0, 5).map((s: string, i: number) => (
+                                <span key={i} className="px-1.5 py-0.5 bg-white rounded text-[8px] text-ink-muted">{s}</span>
+                              ))}
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-[8px] font-bold text-blue-500 mb-1">Google Searches</div>
+                            <div className="flex flex-wrap gap-1">
+                              {abResult.dataInsights.googleSuggestions?.slice(0, 5).map((s: string, i: number) => (
+                                <span key={i} className="px-1.5 py-0.5 bg-white rounded text-[8px] text-ink-muted">{s}</span>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Original */}
                     <div className="bg-cream rounded-lg p-3 mb-3">
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-[9px] font-bold uppercase tracking-wider text-ink-faint">Current Title</span>
                         <span className={`text-xs font-display font-bold ${abResult.originalScore >= 80 ? "text-sage" : abResult.originalScore >= 60 ? "text-terracotta" : "text-red-500"}`}>{abResult.originalScore}/100</span>
                       </div>
                       <p className="text-xs font-semibold mb-1">{result?.title}</p>
-                      <p className="text-[10px] text-ink-faint">{abResult.originalAnalysis}</p>
+                      <p className="text-[10px] text-ink-faint mb-2">{abResult.originalAnalysis}</p>
+                      {abResult.dataInsights && (
+                        <div className="flex gap-3 text-[8px]">
+                          <span className="text-ink-faint">Readability: <span className="font-bold">{abResult.dataInsights.originalReadability}</span></span>
+                          <span className="text-ink-faint">Amazon Match: <span className="font-bold">{abResult.dataInsights.originalAmazonMatch}%</span></span>
+                          <span className="text-ink-faint">Google Match: <span className="font-bold">{abResult.dataInsights.originalGoogleMatch}%</span></span>
+                        </div>
+                      )}
                     </div>
 
+                    {/* Variations */}
                     <div className="space-y-2 mb-4">
                       {abResult.variations?.map((v: any, i: number) => (
                         <div key={i} className={`rounded-lg p-3 border-2 ${v.score > abResult.originalScore ? "border-sage/30 bg-green-50/30" : "border-border bg-white"}`}>
@@ -496,10 +531,25 @@ export default function AppPage() {
                             </div>
                           </div>
                           <p className="text-xs font-semibold mb-1">{v.title}</p>
-                          <p className="text-[10px] text-ink-faint">{v.reason}</p>
+                          <p className="text-[10px] text-ink-faint mb-1">{v.reason}</p>
+                          {v.searchTermsUsed && v.searchTermsUsed.length > 0 && (
+                            <div className="flex items-center gap-1 mb-1 flex-wrap">
+                              <span className="text-[8px] text-sage font-bold">Search terms used:</span>
+                              {v.searchTermsUsed.map((t: string, j: number) => (
+                                <span key={j} className="px-1.5 py-0.5 bg-sage/10 text-sage rounded text-[8px] font-bold">{t}</span>
+                              ))}
+                            </div>
+                          )}
+                          {abResult.dataInsights?.variations?.[i] && (
+                            <div className="flex gap-3 text-[8px] mb-1">
+                              <span className="text-ink-faint">Readability: <span className="font-bold">{abResult.dataInsights.variations[i].readability}</span></span>
+                              <span className="text-ink-faint">Amazon: <span className="font-bold">{abResult.dataInsights.variations[i].amazonMatch}%</span></span>
+                              <span className="text-ink-faint">Google: <span className="font-bold">{abResult.dataInsights.variations[i].googleMatch}%</span></span>
+                            </div>
+                          )}
                           <button
                             onClick={() => { navigator.clipboard.writeText(v.title); setCopied(`ab${i}`); setTimeout(() => setCopied(""), 2000); }}
-                            className="mt-2 text-[9px] font-bold text-terracotta hover:text-terracotta-deep transition"
+                            className="mt-1 text-[9px] font-bold text-terracotta hover:text-terracotta-deep transition"
                           >
                             {copied === `ab${i}` ? "Copied!" : "Copy this title"}
                           </button>
