@@ -33,6 +33,8 @@ export default function AppPage() {
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [seoScore, setSeoScore] = useState<SeoScore | null>(null);
   const [scoredPlatform, setScoredPlatform] = useState("");
+  const [abResult, setAbResult] = useState<any>(null);
+  const [abLoading, setAbLoading] = useState(false);
 
 
   const supabase = createClient();
@@ -76,6 +78,7 @@ export default function AppPage() {
     if (!formData.productName.trim()) return;
     setLoading(true);
     setResult(null);
+    setAbResult(null);
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -111,6 +114,43 @@ export default function AppPage() {
       setLoading(false);
     }
   };
+
+  const handleAbTest = async () => {
+    if (!result?.title) return;
+    setAbLoading(true);
+    setAbResult(null);
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/ab-test", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+        body: JSON.stringify({
+          title: result.title,
+          description: result.description,
+          platform: scoredPlatform || platform,
+          keywords: formData.keywords,
+          productName: formData.productName,
+        }),
+      });
+      const data = await res.json();
+      if (data.limitReached) {
+        setShowUpgrade(true);
+        return;
+      }
+      if (data.error) throw new Error(data.error);
+      setAbResult(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setAbLoading(false);
+    }
+  };
+
+  
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
@@ -405,6 +445,75 @@ export default function AppPage() {
                       {PLATFORM_RULES[scoredPlatform]?.tips.map((tip, i) => (
                         <p key={i} className="text-xs text-ink-muted mb-1">→ {tip}</p>
                       ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* A/B TESTING */}
+                {!abResult && !abLoading && (
+                  <button
+                    onClick={handleAbTest}
+                    className="w-full py-3 bg-ink text-white text-sm font-bold rounded-full hover:bg-ink-soft transition"
+                  >
+                    Generate A/B Title Variations ✨
+                  </button>
+                )}
+
+                {abLoading && (
+                  <div className="bg-white border border-border rounded-xl p-5 text-center">
+                    <div className="w-6 h-6 border-2 border-terracotta border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                    <p className="text-xs text-ink-muted">Generating title variations...</p>
+                  </div>
+                )}
+
+                {abResult && (
+                  <div className="bg-white border border-border rounded-xl p-5">
+                    <div className="flex items-center gap-2 mb-4">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-terracotta">A/B Title Variations</span>
+                      <span className="px-2 py-0.5 bg-terracotta/10 text-terracotta text-[8px] font-extrabold uppercase rounded-full">Growth</span>
+                    </div>
+
+                    <div className="bg-cream rounded-lg p-3 mb-3">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-ink-faint">Current Title</span>
+                        <span className={`text-xs font-display font-bold ${abResult.originalScore >= 80 ? "text-sage" : abResult.originalScore >= 60 ? "text-terracotta" : "text-red-500"}`}>{abResult.originalScore}/100</span>
+                      </div>
+                      <p className="text-xs font-semibold mb-1">{result?.title}</p>
+                      <p className="text-[10px] text-ink-faint">{abResult.originalAnalysis}</p>
+                    </div>
+
+                    <div className="space-y-2 mb-4">
+                      {abResult.variations?.map((v: any, i: number) => (
+                        <div key={i} className={`rounded-lg p-3 border-2 ${v.score > abResult.originalScore ? "border-sage/30 bg-green-50/30" : "border-border bg-white"}`}>
+                          <div className="flex items-center justify-between mb-1">
+                            <div className="flex items-center gap-2">
+                              <span className="w-5 h-5 rounded-full bg-terracotta/10 text-terracotta text-[9px] font-bold flex items-center justify-center">{i + 1}</span>
+                              <span className="text-[9px] font-bold uppercase tracking-wider text-ink-faint">{v.strategy}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[9px] text-ink-faint">{v.charCount} chars</span>
+                              <span className={`text-xs font-display font-bold ${v.score >= 80 ? "text-sage" : v.score >= 60 ? "text-terracotta" : "text-red-500"}`}>{v.score}/100</span>
+                            </div>
+                          </div>
+                          <p className="text-xs font-semibold mb-1">{v.title}</p>
+                          <p className="text-[10px] text-ink-faint">{v.reason}</p>
+                          <button
+                            onClick={() => { navigator.clipboard.writeText(v.title); setCopied(`ab${i}`); setTimeout(() => setCopied(""), 2000); }}
+                            className="mt-2 text-[9px] font-bold text-terracotta hover:text-terracotta-deep transition"
+                          >
+                            {copied === `ab${i}` ? "Copied!" : "Copy this title"}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="bg-terracotta/5 border border-terracotta/15 rounded-lg p-3 mb-2">
+                      <span className="text-[9px] font-bold text-terracotta">RECOMMENDATION: </span>
+                      <span className="text-[11px] text-ink-soft">{abResult.recommendation}</span>
+                    </div>
+                    <div className="bg-cream rounded-lg p-3">
+                      <span className="text-[9px] font-bold text-sage">TESTING TIP: </span>
+                      <span className="text-[11px] text-ink-muted">{abResult.testingTip}</span>
                     </div>
                   </div>
                 )}
